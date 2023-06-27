@@ -1,0 +1,1 @@
+#get the prompt and generate text/scripts 
