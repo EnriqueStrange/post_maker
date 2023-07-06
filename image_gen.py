@@ -1,8 +1,6 @@
-#Generating images after getting the text data from text_gen.py 
-
 from PIL import Image, ImageDraw, ImageFont
 
-def generate_image_template(width, height, background_color, border_color, border_thickness, top_space, logo_path, logo_width, logo_height, text, text_font, text_font_size):
+def generate_image_template(width, height, background_color, border_color, border_thickness, top_space, logo_path, logo_width, logo_height ,header_text , text, text_font, text_font_size):
     # Create a new image with the specified width and height
     image = Image.new("RGB", (width, height), background_color)
     
@@ -30,10 +28,36 @@ def generate_image_template(width, height, background_color, border_color, borde
     
     # Calculate the position to center the text horizontally
     text_x = (width - text_width) // 2
-    text_y = top_space // 3
+    text_y = top_space + 10  # Adjust the value as needed to leave space below the top part
     
-    # Draw the text in the center of the top part
-    draw.text((text_x, text_y), text, font=text_font, fill=(0, 0, 0))
+    # Split the text into lines to fit within the image width
+    lines = []
+    current_line = ""
+    words = text.split()
+    for word in words:
+        test_line = current_line + word + " "
+        test_width, _ = draw.textsize(test_line, font=text_font)
+        if test_width <= width:
+            current_line = test_line
+        else:
+            lines.append(current_line)
+            current_line = word + " "
+    lines.append(current_line)
+
+    # Calculate the position to center the text horizontally
+    header_text_x = (width - text_width) // 3
+    header_text_y = top_space // 4
+
+    #Draw the STRANGE LEARNINGS text
+    draw.text((header_text_x, header_text_y
+                      ), header_text, font=text_font, fill=(0, 0, 0))
+    
+    # Draw the text below the top space, adjusting for line breaks
+    for line in lines:
+        line_width, line_height = draw.textsize(line, font=text_font)
+        line_x = (width - line_width) // 2
+        draw.text((line_x, text_y), line, font=text_font, fill=(0, 0, 0))
+        text_y += line_height + 10  # Adjust the value as needed to leave space between lines
     
     # Save the image
     image.save("image_template.png")
@@ -47,11 +71,26 @@ template_border_color = (0, 0, 0)  # Black color (RGB values)
 template_border_thickness = 5
 template_top_space = 50  # Adjust this value to leave the desired space at the top
 logo_file = "logo.png"  # Path to the logo image file
-logo_width = 100  # Adjust the logo width as needed
-logo_height = 100  # Adjust the logo height as needed
-text = "STRANGE LEARNINGS"  # The text to be displayed
+logo_width = 50  # Adjust the logo width as needed
+logo_height = 50  # Adjust the logo height as needed
+header_text = "STRANGE LEARNINGS"
+text = input("Enter the text: ")  # User-provided text
 text_font = ImageFont.truetype("arial.ttf", 30)  # Font type and size
 text_font_size = 30
 
-# Generate the image template
-generate_image_template(template_width, template_height, template_background_color, template_border_color, template_border_thickness, template_top_space, logo_file, logo_width, logo_height, text, text_font, text_font_size)
+## Generate the image template
+generate_image_template(
+    template_width,
+    template_height,
+    template_background_color,
+    template_border_color,
+    template_border_thickness,
+    template_top_space,
+    logo_file,
+    logo_width,
+    logo_height,
+    header_text,
+    text,
+    text_font,
+    text_font_size,
+)
